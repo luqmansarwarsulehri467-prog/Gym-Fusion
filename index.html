@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gym Fusion</title>
+    <script>
+      /**
+       * Defensive fix for environments where window.fetch is read-only (getter-only).
+       * Some legacy polyfills (like formdata-polyfill pulled by node-fetch) try to
+       * reassign global.fetch, which throws a TypeError in this environment.
+       */
+      (function() {
+        if (typeof window !== 'undefined') {
+          function addSetter(target, name) {
+            try {
+              var desc = Object.getOwnPropertyDescriptor(target, name);
+              if (desc && desc.configurable && !desc.set && (desc.get || !desc.writable)) {
+                var currentVal = target[name];
+                Object.defineProperty(target, name, {
+                  get: function() { return desc.get ? desc.get.call(target) : currentVal; },
+                  set: function(v) { console.warn('Ignoring attempt to overwrite ' + name); },
+                  configurable: true,
+                  enumerable: desc.enumerable
+                });
+              }
+            } catch (e) {}
+          }
+          addSetter(window, 'fetch');
+          if (window.Window && window.Window.prototype) {
+            addSetter(window.Window.prototype, 'fetch');
+          }
+          addSetter(Object.getPrototypeOf(window), 'fetch');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

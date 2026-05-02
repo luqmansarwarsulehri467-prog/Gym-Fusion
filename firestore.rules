@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Auth Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      function isValidUser(data) {
+        return data.fullName is string && data.fullName.size() <= 100 &&
+               data.email is string && data.email.size() <= 100 &&
+               data.role in ['member', 'admin'];
+      }
+
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      // Allow public creation of member accounts
+      allow create: if request.resource.data.role == 'member' || request.resource.data.email == 'luqmansarwarsulehri467@gmail.com'; 
+      allow update: if (isOwner(userId) && (request.resource.data.role == resource.data.role || request.resource.data.email == 'luqmansarwarsulehri467@gmail.com')) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 2. Public Content (Trainers, Plans, Products, FAQs, Rules)
+    match /trainers/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /workoutPlans/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /dietPlans/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /faqs/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /rules/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 3. Contact Messages
+    match /contactMessages/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 4. Transactions
+    match /transactions/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // 5. Orders
+    match /orders/{id} {
+      allow create: if true; // Allow guests to checkout
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 6. Settings
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // 7. Test connection 
+    match /test/connection {
+      allow get: if true;
+    }
+  }
+}
