@@ -51,25 +51,26 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="max-w-3xl"
+            className="max-w-4xl"
           >
-            <h1 className="text-7xl md:text-[140px] font-black uppercase tracking-tight leading-[0.9] mb-4">
+            <h1 className="text-6xl md:text-[160px] font-black uppercase tracking-tighter leading-[0.8] mb-8 select-none">
               FORGE YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 italic">LEGACY</span>
+              <span className="text-orange-600">LEGACY</span>
             </h1>
-            <p className="text-zinc-300 text-lg md:text-xl mb-10 max-w-xl leading-relaxed font-medium">
+            <p className="text-zinc-300 text-lg md:text-xl mb-12 max-w-2xl leading-relaxed font-medium">
               Transform your body, elevate your mind. Join GymFusion and unlock your true potential with world-class trainers and cutting-edge equipment.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-6">
               <Link
                 to="/register"
-                className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white px-10 py-5 rounded-xl font-black uppercase tracking-widest transition-all scale-100 hover:scale-105 active:scale-95 shadow-xl shadow-orange-950/20"
+                className="bg-gradient-to-r from-[#FF4A1B] to-[#FF2D00] hover:brightness-110 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest transition-all scale-100 hover:scale-105 active:scale-95 shadow-2xl shadow-orange-950/40 flex items-center group"
               >
-                Join Now →
+                <span>Join Now</span>
+                <ChevronRight size={24} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/about"
-                className="bg-white/5 border border-white/20 hover:bg-white/10 backdrop-blur-md text-white px-10 py-5 rounded-xl font-black uppercase tracking-widest transition-all scale-100 hover:scale-105"
+                className="bg-[#0F1115]/80 border border-zinc-800 hover:bg-zinc-900/80 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest transition-all scale-100 hover:scale-105"
               >
                 Learn More
               </Link>
@@ -78,14 +79,15 @@ const Home = () => {
         </div>
 
         {/* Indicators */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-3">
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-3">
           {HERO_IMAGES.map((_, idx) => (
-            <div 
+            <button 
               key={idx}
-              className={`h-2 transition-all duration-500 rounded-full ${
+              onClick={() => setCurrentImageIndex(idx)}
+              className={`transition-all duration-500 rounded-full ${
                 idx === currentImageIndex 
-                  ? 'w-12 bg-orange-600' 
-                  : 'w-2 bg-zinc-700'
+                  ? 'w-16 h-3 bg-orange-600' 
+                  : 'w-3 h-3 bg-white/20 hover:bg-white/40'
               }`}
             />
           ))}
@@ -172,7 +174,7 @@ const Home = () => {
             <div className="space-y-8">
               <div>
                 <h2 className="text-orange-600 font-bold uppercase tracking-[0.3em] text-xs mb-4">Our History</h2>
-                <h3 className="text-5xl font-black uppercase italic tracking-tighter mb-6">Built For The <span className="text-orange-600">Committed</span></h3>
+                <h3 className="text-5xl font-black uppercase tracking-tighter mb-6">Built For The <span className="text-orange-600">Committed</span></h3>
                 <p className="text-zinc-400 text-lg leading-relaxed font-medium">
                   GymFusion started with a simple goal: provide a no-nonsense environment for serious athletes. We've eliminated the fluff and focused on the essentials—heavy iron, expert guidance, and an atmosphere that demands progress. 
                 </p>
@@ -202,10 +204,10 @@ const Home = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-24 bg-gradient-to-br from-orange-600 to-red-700 relative overflow-hidden">
+      <section className="py-32 bg-gradient-to-br from-orange-600 to-red-700 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-6xl md:text-8xl font-black uppercase italic mb-8 text-white tracking-tighter leading-none">
-            Forge A <br /> New Reality
+          <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-8 text-white leading-[0.85]">
+            FORGE A <br /> NEW REALITY
           </h2>
           <p className="text-orange-100 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-medium opacity-90">
             Stop making excuses. A year from today, you'll wish you had started now. The elite tribe is waiting.
@@ -219,7 +221,7 @@ const Home = () => {
         </div>
         
         <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none select-none overflow-hidden">
-          <span className="text-[30vw] font-black uppercase italic text-black whitespace-nowrap">EXTREME EXTREME</span>
+          <span className="text-[20vw] font-black uppercase italic text-black whitespace-nowrap">ELITE PERFORMANCE</span>
         </div>
       </section>
     </div>
