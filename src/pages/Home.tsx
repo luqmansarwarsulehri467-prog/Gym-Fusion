@@ -53,7 +53,7 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="max-w-4xl"
           >
-            <h1 className="text-6xl md:text-[160px] font-black uppercase tracking-tighter leading-[0.8] mb-8 select-none">
+            <h1 className="text-6xl md:text-[120px] font-black uppercase tracking-tighter leading-[0.8] mb-8 select-none">
               FORGE YOUR <br />
               <span className="text-orange-600">LEGACY</span>
             </h1>

@@ -18,25 +18,26 @@ interface Product {
 const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
   const { addToCart } = useCart();
   const { settings } = useSettings();
 
   const mockProducts: Product[] = [
     {
       id: '1',
-      name: 'Olympic Barbell 20kg',
-      price: 299,
-      specifications: 'High-tensile steel, 1500lb capacity, hard chrome finish.',
-      photoURL: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=300&auto=format&fit=crop',
-      category: 'Weights'
+      name: 'Whey Protein Isolate',
+      price: 65,
+      specifications: '25g protein per scoop, zero sugar, fast-absorbing.',
+      photoURL: 'https://images.unsplash.com/photo-1593095191850-2a733009e457?q=80&w=300&auto=format&fit=crop',
+      category: 'Supplements'
     },
     {
       id: '2',
-      name: 'Adjustable Dumbbells (Pair)',
-      price: 450,
-      specifications: '5lb to 52.5lb range, easy dial system, space-saving.',
-      photoURL: 'https://images.unsplash.com/photo-1638536532686-d610adfc8e5c?q=80&w=300&auto=format&fit=crop',
-      category: 'Weights'
+      name: 'Pre-Workout Elite',
+      price: 45,
+      specifications: 'Explosive energy, focus matrix, pump enhancers.',
+      photoURL: 'https://images.unsplash.com/photo-1594498308143-2e82f86a4c4e?q=80&w=300&auto=format&fit=crop',
+      category: 'Supplements'
     },
     {
       id: '3',
@@ -74,9 +75,17 @@ const Shop = () => {
           <h2 className="text-orange-600 font-bold uppercase tracking-widest text-sm mb-2">The Armory</h2>
           <h1 className="text-5xl font-black uppercase italic tracking-tighter">Gym Equipment</h1>
         </div>
-        <div className="flex space-x-2">
-          {['All', 'Weights', 'Cardio', 'Accessories'].map(cat => (
-            <button key={cat} className="px-4 py-2 border border-zinc-800 text-xs font-black uppercase tracking-widest hover:border-orange-600 hover:text-orange-600 transition-all">
+        <div className="flex flex-wrap gap-2">
+          {['All', 'Supplements', 'Cardio', 'Accessories', 'Apparel'].map(cat => (
+            <button 
+              key={cat} 
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-2 border text-[10px] font-black uppercase tracking-widest transition-all ${
+                activeCategory === cat 
+                  ? 'border-orange-600 text-orange-600 bg-orange-600/5' 
+                  : 'border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'
+              }`}
+            >
               {cat}
             </button>
           ))}
@@ -84,7 +93,9 @@ const Shop = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {products.map((product, idx) => (
+        {products
+          .filter(p => activeCategory === 'All' || p.category === activeCategory)
+          .map((product, idx) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 20 }}

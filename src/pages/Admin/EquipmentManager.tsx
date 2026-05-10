@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Trash2, Edit, X, Save, ShoppingBasket, Tag, Package } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Save, ShoppingBasket, Tag, Package, Upload } from 'lucide-react';
 
 interface Product {
   id?: string;
@@ -64,6 +64,23 @@ const EquipmentManager = () => {
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 800 * 1024) {
+        alert('File size too large. Please upload an image smaller than 800KB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (editingProduct) {
+          setEditingProduct({ ...editingProduct, photoURL: reader.result as string });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -72,7 +89,7 @@ const EquipmentManager = () => {
           <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Asset Control & Logistics</p>
         </div>
         <button 
-          onClick={() => { setEditingProduct({ name: '', price: 0, specifications: '', photoURL: '', stock: 0, category: 'Weights' }); setIsModalOpen(true); }}
+          onClick={() => { setEditingProduct({ name: '', price: 0, specifications: '', photoURL: '', stock: 0, category: 'Supplements' }); setIsModalOpen(true); }}
           className="bg-orange-600 hover:bg-orange-500 px-6 py-3 font-black uppercase italic tracking-widest text-xs transition-all flex items-center space-x-2 skew-x-[-12deg]"
         >
           <Plus className="skew-x-[12deg]" size={16} />
@@ -148,15 +165,21 @@ const EquipmentManager = () => {
                    <div className="space-y-1">
                       <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Category</label>
                       <select className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white uppercase font-bold text-sm outline-none focus:border-orange-600" value={editingProduct?.category} onChange={e => setEditingProduct({...editingProduct!, category: e.target.value})}>
-                         <option value="Weights">Weights</option>
+                         <option value="Supplements">Supplements</option>
                          <option value="Cardio">Cardio</option>
                          <option value="Accessories">Accessories</option>
                          <option value="Apparel">Apparel</option>
                       </select>
                    </div>
                    <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Asset Image (URL)</label>
-                      <input required className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white text-sm outline-none focus:border-orange-600" value={editingProduct?.photoURL} onChange={e => setEditingProduct({...editingProduct!, photoURL: e.target.value})} />
+                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Asset Image</label>
+                      <div className="flex space-x-2">
+                        <input className="flex-1 bg-zinc-950 border border-zinc-800 p-3 text-white text-sm outline-none focus:border-orange-600" placeholder="Image URL..." value={editingProduct?.photoURL} onChange={e => setEditingProduct({...editingProduct!, photoURL: e.target.value})} />
+                        <label className="cursor-pointer bg-zinc-800 border border-zinc-700 px-4 flex items-center justify-center hover:bg-zinc-700 transition-colors">
+                          <Upload size={16} className="text-orange-600" />
+                          <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                        </label>
+                      </div>
                    </div>
                 </div>
 
