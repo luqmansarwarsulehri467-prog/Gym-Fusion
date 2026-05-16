@@ -180,6 +180,11 @@ const EquipmentManager = () => {
                           <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
                         </label>
                       </div>
+                      {editingProduct?.photoURL && (
+                        <div className="mt-2 h-24 w-full border border-zinc-800 overflow-hidden bg-black rounded-lg">
+                          <img src={editingProduct.photoURL} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                      )}
                    </div>
                 </div>
 
