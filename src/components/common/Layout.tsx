@@ -35,7 +35,7 @@ const Navbar = () => {
     { name: 'Home', path: '/', icon: <Home size={16} /> },
     { name: 'About', path: '/about', icon: <Info size={16} /> },
     { name: 'Shop', path: '/equipment', icon: <ShoppingBag size={16} /> },
-    { name: 'Plans', path: '/workout-plans', icon: <ClipboardList size={16} /> },
+    { name: 'Plans', path: '/plans', icon: <ClipboardList size={16} /> },
     { name: 'Register', path: '/register', icon: <UserPlus size={16} /> },
     { name: 'Rules', path: '/rules', icon: <ScrollText size={16} /> },
     { name: 'FAQ', path: '/faq', icon: <HelpCircle size={16} /> },
@@ -108,7 +108,7 @@ const Navbar = () => {
               </div>
             ) : (
               <Link 
-                to="/register" 
+                to="/login" 
                 className="bg-zinc-900 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-zinc-800 hover:bg-zinc-800 transition-all text-zinc-400 hover:text-white"
               >
                 Login

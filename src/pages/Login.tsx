@@ -24,6 +24,7 @@ const Login = () => {
           photoURL: user.photoURL,
           role: 'member',
           status: 'active',
+          feeStatus: 'pending',
           registeredAt: new Date().toISOString(),
         });
         navigate('/profile');

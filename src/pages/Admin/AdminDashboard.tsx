@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -12,14 +12,27 @@ import {
   Shield,
   Menu,
   X,
-  Globe
+  Globe,
+  User
 } from 'lucide-react';
-import { auth } from '../../lib/firebase';
+import { auth, db } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+  const [adminProfile, setAdminProfile] = useState<{name: string, photoURL: string} | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const snap = await getDoc(doc(db, 'settings', 'adminProfile'));
+      if (snap.exists()) {
+        setAdminProfile(snap.data() as any);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -96,11 +109,15 @@ const AdminDashboard = () => {
           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 italic">System Status: <span className="text-green-500">Online</span></h2>
           <div className="flex items-center space-x-6">
              <div className="text-right">
-               <p className="text-[10px] font-black uppercase text-white leading-none">Admin Authority</p>
+               <p className="text-[10px] font-black uppercase text-white leading-none">{adminProfile?.name || 'Admin Authority'}</p>
                <p className="text-[8px] text-orange-600 uppercase tracking-widest font-bold">Lvl 1 Access</p>
              </div>
-             <div className="w-10 h-10 rounded-none bg-orange-600 flex items-center justify-center skew-x-[-12deg]">
-               <Shield className="text-white skew-x-[12deg]" size={20} />
+             <div className="w-10 h-10 rounded-none bg-zinc-800 border border-zinc-700 flex items-center justify-center skew-x-[-12deg] overflow-hidden">
+               {adminProfile?.photoURL ? (
+                 <img src={adminProfile.photoURL} alt="" className="w-full h-full object-cover skew-x-[12deg]" />
+               ) : (
+                 <Shield className="text-orange-600 skew-x-[12deg]" size={20} />
+               )}
              </div>
           </div>
         </header>

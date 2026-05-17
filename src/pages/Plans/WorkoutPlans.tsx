@@ -64,12 +64,7 @@ const WorkoutPlans = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <div className="mb-16">
-        <h2 className="text-orange-600 font-bold uppercase tracking-widest text-sm mb-2">Training Systems</h2>
-        <h1 className="text-5xl font-black uppercase italic tracking-tighter">Workout Plans</h1>
-      </div>
-
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {plans.map((plan, idx) => (
           <motion.div

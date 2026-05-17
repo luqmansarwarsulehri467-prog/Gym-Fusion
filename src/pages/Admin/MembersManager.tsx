@@ -14,7 +14,8 @@ import {
   Plus, 
   X,
   CreditCard,
-  AlertCircle
+  AlertCircle,
+  Upload
 } from 'lucide-react';
 
 interface Member {
@@ -39,11 +40,18 @@ const MembersManager = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [trainers, setTrainers] = useState<any[]>([]);
+  const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
+  const [dietPlans, setDietPlans] = useState<any[]>([]);
   
   // Form State
   const [newMember, setNewMember] = useState({
     fullName: '',
     email: '',
+    photoURL: '',
+    trainerId: '',
+    workoutPlanId: '',
+    dietPlanId: '',
     includeReg: true,
     includeGym: true,
     includeTrainer: false,
@@ -57,7 +65,37 @@ const MembersManager = () => {
 
   useEffect(() => {
     fetchMembers();
+    fetchOptions();
   }, []);
+
+  const fetchOptions = async () => {
+    try {
+      const trainersSnap = await getDocs(collection(db, 'trainers'));
+      const workoutSnap = await getDocs(collection(db, 'workoutPlans'));
+      const dietSnap = await getDocs(collection(db, 'dietPlans'));
+      
+      setTrainers(trainersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setWorkoutPlans(workoutSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setDietPlans(dietSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 800 * 1024) {
+        alert('File size too large. Please upload an image smaller than 800KB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewMember({ ...newMember, photoURL: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const fetchMembers = async () => {
     try {
@@ -90,6 +128,10 @@ const MembersManager = () => {
       const memberData = {
         fullName: newMember.fullName,
         email: newMember.email,
+        photoURL: newMember.photoURL,
+        trainerId: newMember.trainerId,
+        workoutPlanId: newMember.workoutPlanId,
+        dietPlanId: newMember.dietPlanId,
         role: 'member',
         status: 'active',
         feeStatus: 'pending',
@@ -108,6 +150,10 @@ const MembersManager = () => {
       setNewMember({
         fullName: '',
         email: '',
+        photoURL: '',
+        trainerId: '',
+        workoutPlanId: '',
+        dietPlanId: '',
         includeReg: true,
         includeGym: true,
         includeTrainer: false,
@@ -323,6 +369,23 @@ const MembersManager = () => {
                         onChange={e => setNewMember({...newMember, email: e.target.value})}
                       />
                     </div>
+                    <div>
+                      <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-widest mb-2">Subject Image Asset</label>
+                      <div className="flex space-x-2">
+                        <div className="flex-1 bg-zinc-900 border border-zinc-800 p-4 text-[10px] font-black text-zinc-500 overflow-hidden truncate">
+                          {newMember.photoURL ? 'IMAGE LOADED' : 'NO ASSET SELECTED'}
+                        </div>
+                        <label className="bg-orange-600 hover:bg-orange-500 px-4 flex items-center justify-center cursor-pointer transition-colors">
+                          <Upload size={16} className="text-white" />
+                          <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                        </label>
+                      </div>
+                      {newMember.photoURL && (
+                        <div className="mt-4 h-32 w-full border border-zinc-800 bg-black overflow-hidden flex items-center justify-center">
+                          <img src={newMember.photoURL} alt="Preview" className="h-full w-auto object-contain" />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -350,19 +413,40 @@ const MembersManager = () => {
                        </label>
 
                        <div className="space-y-2 pt-2">
-                         <label className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 cursor-pointer hover:border-orange-600/30 transition-all">
-                            <span className="text-[10px] font-black uppercase">Personal Trainer Add-on</span>
-                            <input 
-                              type="checkbox" 
-                              checked={newMember.includeTrainer}
-                              onChange={e => setNewMember({...newMember, includeTrainer: e.target.checked})}
-                              className="accent-orange-600"
-                            />
+                         <label className="flex flex-col space-y-2 p-3 bg-zinc-900 border border-zinc-800 cursor-pointer hover:border-orange-600/30 transition-all">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-black uppercase">Personal Trainer Add-on</span>
+                              <input 
+                                type="checkbox" 
+                                checked={newMember.includeTrainer}
+                                onChange={e => setNewMember({...newMember, includeTrainer: e.target.checked})}
+                                className="accent-orange-600"
+                              />
+                            </div>
+                            {newMember.includeTrainer && (
+                              <select 
+                                className="w-full bg-zinc-950 border border-zinc-800 p-2 text-[10px] font-black uppercase outline-none focus:border-orange-600"
+                                value={newMember.trainerId}
+                                onChange={e => {
+                                  const selected = trainers.find(t => t.id === e.target.value);
+                                  setNewMember({
+                                    ...newMember, 
+                                    trainerId: e.target.value,
+                                    trainerFee: selected ? selected.fees : 1500
+                                  });
+                                }}
+                              >
+                                <option value="">SELECT TRAINER</option>
+                                {trainers.map(t => (
+                                  <option key={t.id} value={t.id}>{t.name} (Rs {t.fees})</option>
+                                ))}
+                              </select>
+                            )}
                          </label>
-                         {newMember.includeTrainer && (
+                         {newMember.includeTrainer && !newMember.trainerId && (
                            <input 
                               type="number"
-                              placeholder="Monthly Trainer Fee"
+                              placeholder="Manual Trainer Fee"
                               className="w-full bg-zinc-950 border border-zinc-800 p-3 text-[10px] font-black uppercase outline-none focus:border-orange-600"
                               value={newMember.trainerFee}
                               onChange={e => setNewMember({...newMember, trainerFee: Number(e.target.value)})}
@@ -371,24 +455,59 @@ const MembersManager = () => {
                        </div>
 
                        <div className="space-y-2 pt-2">
-                         <label className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 cursor-pointer hover:border-orange-600/30 transition-all">
-                            <span className="text-[10px] font-black uppercase">Custom Diet Plan Add-on</span>
-                            <input 
-                              type="checkbox" 
-                              checked={newMember.includeDiet}
-                              onChange={e => setNewMember({...newMember, includeDiet: e.target.checked})}
-                              className="accent-orange-600"
-                            />
+                         <label className="flex flex-col space-y-2 p-3 bg-zinc-900 border border-zinc-800 cursor-pointer hover:border-orange-600/30 transition-all">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-black uppercase">Custom Diet Plan Add-on</span>
+                              <input 
+                                type="checkbox" 
+                                checked={newMember.includeDiet}
+                                onChange={e => setNewMember({...newMember, includeDiet: e.target.checked})}
+                                className="accent-orange-600"
+                              />
+                            </div>
+                            {newMember.includeDiet && (
+                              <select 
+                                className="w-full bg-zinc-950 border border-zinc-800 p-2 text-[10px] font-black uppercase outline-none focus:border-orange-600"
+                                value={newMember.dietPlanId}
+                                onChange={e => {
+                                  const selected = dietPlans.find(p => p.id === e.target.value);
+                                  setNewMember({
+                                    ...newMember, 
+                                    dietPlanId: e.target.value,
+                                    dietFee: selected ? selected.additionalFee : 1000
+                                  });
+                                }}
+                              >
+                                <option value="">SELECT DIET PLAN</option>
+                                {dietPlans.map(p => (
+                                  <option key={p.id} value={p.id}>{p.name} (Rs {p.additionalFee})</option>
+                                ))}
+                              </select>
+                            )}
                          </label>
-                         {newMember.includeDiet && (
+                         {newMember.includeDiet && !newMember.dietPlanId && (
                            <input 
                               type="number"
-                              placeholder="Diet Plan Fee"
+                              placeholder="Manual Diet Plan Fee"
                               className="w-full bg-zinc-950 border border-zinc-800 p-3 text-[10px] font-black uppercase outline-none focus:border-orange-600"
                               value={newMember.dietFee}
                               onChange={e => setNewMember({...newMember, dietFee: Number(e.target.value)})}
                            />
                          )}
+                       </div>
+
+                       <div className="space-y-2 pt-2">
+                          <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-widest mb-1 px-1">Workout Protocol</label>
+                          <select 
+                            className="w-full bg-zinc-900 border border-zinc-800 p-3 text-[10px] font-black uppercase outline-none focus:border-orange-600"
+                            value={newMember.workoutPlanId}
+                            onChange={e => setNewMember({...newMember, workoutPlanId: e.target.value})}
+                          >
+                            <option value="">SELECT WORKOUT PLAN</option>
+                            {workoutPlans.map(p => (
+                              <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                          </select>
                        </div>
                     </div>
                   </div>

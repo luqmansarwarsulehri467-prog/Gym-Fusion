@@ -170,7 +170,7 @@ const About = () => {
                 <MapPin size={24} />
               </div>
               <div>
-                <h6 className="text-xs font-black uppercase tracking-widest mb-2 text-zinc-300">HQ Location</h6>
+                <h6 className="text-xs font-black uppercase tracking-widest mb-2 text-zinc-300">GYM Location</h6>
                 <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">{settings.address}</p>
               </div>
             </div>
@@ -180,8 +180,9 @@ const About = () => {
               </div>
               <div>
                 <h6 className="text-xs font-black uppercase tracking-widest mb-2 text-zinc-300">Operational Hours</h6>
-                <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">Mon - Sat: 05:00 - 23:00</p>
-                <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">Sun: 08:00 - 18:00</p>
+                <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">Mon-Sat: 05:00-10:00(Morning)</p>
+                <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">Mon-Sat: 04:00-11:00(Evening)</p>
+                <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">Sun-Off </p>
               </div>
             </div>
             <div className="bg-zinc-900/50 p-8 border border-zinc-800 rounded-3xl flex items-start space-x-6">
@@ -191,7 +192,7 @@ const About = () => {
               <div>
                 <h6 className="text-xs font-black uppercase tracking-widest mb-2 text-zinc-300">Comms Line</h6>
                 <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">{settings.phone}</p>
-                <p className="text-sm text-zinc-500 font-bold uppercase tracking-tight">{settings.email}</p>
+                <p className="text-[10px] md:text-xs text-zinc-500 font-bold lowercase truncate max-w-[150px] sm:max-w-none">{settings.email}</p>
               </div>
             </div>
           </div>

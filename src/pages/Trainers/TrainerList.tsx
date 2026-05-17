@@ -105,7 +105,7 @@ const TrainerList = () => {
                 referrerPolicy="no-referrer"
               />
               <div className="absolute top-4 right-4 bg-orange-600 px-3 py-1 text-xs font-black uppercase italic italic skew-x-[-12deg]">
-                <span className="skew-x-[12deg]">${trainer.fees} / Session</span>
+                <span className="skew-x-[12deg]">Rs {trainer.fees} / Session</span>
               </div>
             </div>
 

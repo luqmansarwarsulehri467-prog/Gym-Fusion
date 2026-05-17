@@ -11,6 +11,7 @@ import Registration from './pages/Members/Registration';
 import Trainers from './pages/Trainers/TrainerList';
 import WorkoutPlans from './pages/Plans/WorkoutPlans';
 import DietPlans from './pages/Plans/DietPlans';
+import Plans from './pages/Plans/Plans';
 import Equipment from './pages/Equipment/Shop';
 import Cart from './pages/Equipment/Cart';
 import Checkout from './pages/Equipment/Checkout';
@@ -44,6 +45,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Registration />} />
       <Route path="/trainers" element={<Trainers />} />
+      <Route path="/plans" element={<Plans />} />
       <Route path="/workout-plans" element={<WorkoutPlans />} />
       <Route path="/diet-plans" element={<DietPlans />} />
       <Route path="/equipment" element={<Equipment />} />

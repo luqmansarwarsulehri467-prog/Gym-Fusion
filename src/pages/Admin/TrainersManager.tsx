@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, deleteDoc, setDoc, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Trash2, Edit, X, Save, Shield } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Save, Shield, Upload } from 'lucide-react';
 
 interface Trainer {
   id?: string;
@@ -32,6 +32,23 @@ const TrainersManager = () => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 800 * 1024) {
+        alert('File size too large. Please upload an image smaller than 800KB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (editingTrainer) {
+          setEditingTrainer({ ...editingTrainer, photoURL: reader.result as string });
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -150,12 +167,23 @@ const TrainersManager = () => {
 
                 <div className="grid grid-cols-2 gap-6">
                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Session Fee ($)</label>
+                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Session Fee (Rs)</label>
                       <input required type="number" className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white uppercase font-bold text-sm outline-none focus:border-orange-600" value={editingTrainer?.fees} onChange={e => setEditingTrainer({...editingTrainer!, fees: Number(e.target.value)})} />
                    </div>
                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Visual Asset (URL)</label>
-                      <input required className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white text-sm outline-none focus:border-orange-600" value={editingTrainer?.photoURL} onChange={e => setEditingTrainer({...editingTrainer!, photoURL: e.target.value})} />
+                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Visual Asset</label>
+                      <div className="flex space-x-2">
+                        <input className="flex-1 bg-zinc-950 border border-zinc-800 p-3 text-white text-sm outline-none focus:border-orange-600" placeholder="Image URL..." value={editingTrainer?.photoURL} onChange={e => setEditingTrainer({...editingTrainer!, photoURL: e.target.value})} />
+                        <label className="cursor-pointer bg-zinc-800 border border-zinc-700 px-4 flex items-center justify-center hover:bg-zinc-700 transition-colors">
+                          <Upload size={16} className="text-orange-600" />
+                          <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                        </label>
+                      </div>
+                      {editingTrainer?.photoURL && (
+                        <div className="mt-2 h-24 w-full border border-zinc-800 overflow-hidden bg-black rounded-lg">
+                          <img src={editingTrainer.photoURL} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                      )}
                    </div>
                 </div>
 

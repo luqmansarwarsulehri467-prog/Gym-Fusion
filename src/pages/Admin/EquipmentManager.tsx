@@ -103,7 +103,7 @@ const EquipmentManager = () => {
              <div className="h-40 bg-zinc-950 relative overflow-hidden">
                 <img src={p.photoURL} alt="" className="w-full h-full object-cover grayscale opacity-50 transition-all duration-300 group-hover:grayscale-0 group-hover:opacity-100" referrerPolicy="no-referrer" />
                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-600 border border-zinc-800">
-                  ${p.price}
+                  Rs {p.price}
                 </div>
              </div>
              <div className="p-6">
@@ -152,7 +152,7 @@ const EquipmentManager = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                    <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Price / Cost ($)</label>
+                      <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Price / Cost (Rs)</label>
                       <input required type="number" className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white uppercase font-bold text-sm outline-none focus:border-orange-600" value={editingProduct?.price} onChange={e => setEditingProduct({...editingProduct!, price: Number(e.target.value)})} />
                    </div>
                    <div className="space-y-1">

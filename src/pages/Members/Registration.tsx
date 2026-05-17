@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { auth, db } from '../../lib/firebase';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { User, Dumbbell, Utensils, Users, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { User, Dumbbell, Utensils, Users, CheckCircle2, ChevronRight, ChevronLeft, Upload } from 'lucide-react';
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -24,6 +24,21 @@ const Registration = () => {
     workoutPlans: [] as any[],
     dietPlans: [] as any[],
   });
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 800 * 1024) {
+        alert('File size too large. Please upload an image smaller than 800KB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, photoURL: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +85,7 @@ const Registration = () => {
         uid: uid,
         role: 'member',
         status: 'active',
+        feeStatus: 'pending',
         registeredAt: new Date().toISOString()
       }, { merge: true });
       
@@ -130,11 +146,27 @@ const Registration = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Profile Picture URL</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Profile Asset (Image Upload)</label>
+                  <div className="flex space-x-2">
+                    <div className="flex-1 bg-zinc-950 border border-zinc-800 p-4 text-[10px] font-black text-zinc-600 overflow-hidden truncate">
+                      {formData.photoURL ? 'BIOMETRIC ASSET LOADED' : 'NO ASSET SELECTED'}
+                    </div>
+                    <label className="bg-orange-600 hover:bg-orange-500 px-6 flex items-center justify-center cursor-pointer transition-colors shadow-lg shadow-orange-950/20">
+                      <Upload size={18} className="text-white" />
+                      <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                    </label>
+                  </div>
+                  {formData.photoURL && (
+                    <div className="mt-4 h-40 w-full border border-zinc-800 bg-black overflow-hidden flex items-center justify-center rounded-xl">
+                      <img src={formData.photoURL} alt="Preview" className="h-full w-auto object-contain" />
+                    </div>
+                  )}
+                  <p className="text-[8px] text-zinc-600 uppercase font-bold tracking-tighter mt-1 italic">Or paste a direct URL below</p>
                   <input
                     type="text"
-                    className="w-full bg-zinc-950 border border-zinc-800 p-4 text-white focus:border-orange-600 outline-none"
-                    value={formData.photoURL}
+                    placeholder="URL ASSET OVERRIDE..."
+                    className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white focus:border-orange-600 outline-none text-[10px]"
+                    value={formData.photoURL.startsWith('data:') ? '' : formData.photoURL}
                     onChange={e => setFormData({ ...formData, photoURL: e.target.value })}
                   />
                 </div>
@@ -196,7 +228,7 @@ const Registration = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h4 className="font-black uppercase italic text-lg">{p.name}</h4>
-                        <p className="text-zinc-500 text-xs italic">{p.type} plan (+${p.additionalFee})</p>
+                        <p className="text-zinc-500 text-xs italic">{p.type} plan (+Rs {p.additionalFee})</p>
                       </div>
                       <div className="text-orange-600"><Utensils size={20} /></div>
                     </div>

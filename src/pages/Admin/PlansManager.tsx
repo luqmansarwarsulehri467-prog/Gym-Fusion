@@ -127,7 +127,7 @@ const PlansManager = () => {
              </div>
              <div className="pt-4 border-t border-zinc-800 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
                 <span>{plan.goal || plan.type}</span>
-                <span className="text-orange-600">{plan.duration || `$${plan.additionalFee}`}</span>
+                <span className="text-orange-600">{plan.duration || `Rs ${plan.additionalFee}`}</span>
              </div>
           </div>
         ))}
@@ -191,7 +191,7 @@ const PlansManager = () => {
                          <input required className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white uppercase font-bold text-sm outline-none focus:border-orange-600" value={editingPlan?.type} onChange={e => setEditingPlan({...editingPlan!, type: e.target.value})} />
                       </div>
                       <div className="space-y-2">
-                         <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Additional Cost ($)</label>
+                         <label className="text-[10px] font-black uppercase text-zinc-500 px-1">Additional Cost (Rs)</label>
                          <input required type="number" className="w-full bg-zinc-950 border border-zinc-800 p-3 text-white uppercase font-bold text-sm outline-none focus:border-orange-600" value={editingPlan?.additionalFee} onChange={e => setEditingPlan({...editingPlan!, additionalFee: Number(e.target.value)})} />
                       </div>
                     </div>
